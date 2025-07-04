@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mkx/shared/bottom_bar.dart';
 import 'package:mkx/screens/movie_list_screen.dart';
+import 'package:mkx/screens/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,7 +45,7 @@ class _MyAppState extends State<MyApp> {
       theme: _darkTheme,
       darkTheme: _darkTheme,
       themeMode: ThemeMode.dark,
-      home: MainScreen(),
+      home: SplashScreen(nextScreen: MainScreen()),
     );
   }
 }

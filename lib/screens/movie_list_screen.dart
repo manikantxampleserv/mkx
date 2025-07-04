@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mkx/screens/movie_detail_screen.dart';
 import 'package:mkx/shared/silver_delegate.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MovieListScreen extends StatefulWidget {
   const MovieListScreen({super.key});
@@ -97,87 +99,258 @@ class _MovieListScreenState extends State<MovieListScreen> {
     },
   ];
 
+  bool _isLoading = false;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+
+  // Simulates fetching data from an API
+  Future<void> _refreshMovies() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Simulate network delay
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Shuffle the movies list to simulate new data
+    setState(() {
+      movies.shuffle();
+      _isLoading = false;
+    });
+
+    // Show a snackbar to indicate refresh is complete
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Movies refreshed!'),
+          duration: Duration(seconds: 1),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Widget _buildShimmerCard() {
+    return Card(
+      elevation: 0,
+      color: Colors.white10,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey[800]!,
+        highlightColor: Colors.grey[600]!,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              child: Container(
+                width: double.infinity,
+                height: 180,
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Container(width: 100, height: 18, color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: 12,
+                    color: Colors.grey[700],
+                  ),
+                  const SizedBox(height: 4),
+                  Container(
+                    width: double.infinity,
+                    height: 12,
+                    color: Colors.grey[700],
+                  ),
+                  const SizedBox(height: 4),
+                  Container(width: 120, height: 12, color: Colors.grey[700]),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Movieflix')),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          itemCount: movies.length,
-          gridDelegate: SilverDelegate(
-            crossAxisCount: 2,
-            childAspectRatio: 0.62,
+      appBar: AppBar(
+        title: const Text('Movieflix'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _isLoading
+                ? null
+                : () {
+                    _refreshIndicatorKey.currentState?.show();
+                  },
           ),
-          itemBuilder: (context, index) {
-            final movie = movies[index];
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MovieDetailScreen(
-                      title: movie['title']!,
-                      imageUrl: movie['imageUrl']!,
-                      description: movie['description']!,
+        ],
+      ),
+      body: Stack(
+        children: [
+          // Main content with pull-to-refresh
+          RefreshIndicator(
+            key: _refreshIndicatorKey,
+            onRefresh: _refreshMovies,
+            color: Colors.red,
+            backgroundColor: Colors.grey.shade800,
+            strokeWidth: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _isLoading
+                  ? GridView.builder(
+                      itemCount: 8,
+                      gridDelegate: SilverDelegate(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.62,
+                      ),
+                      itemBuilder: (context, index) => _buildShimmerCard(),
+                    )
+                  : GridView.builder(
+                      itemCount: movies.length,
+                      gridDelegate: SilverDelegate(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.62,
+                      ),
+                      itemBuilder: (context, index) {
+                        final movie = movies[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MovieDetailScreen(
+                                  title: movie['title']!,
+                                  imageUrl: movie['imageUrl']!,
+                                  description: movie['description']!,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Card(
+                            elevation: 0,
+                            color: Colors.white10,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(12),
+                                    topRight: Radius.circular(12),
+                                  ),
+                                  child: Image.network(
+                                    movie['imageUrl']!,
+                                    width: double.infinity,
+                                    height: 180,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                          if (loadingProgress == null)
+                                            return child;
+                                          return Container(
+                                            width: double.infinity,
+                                            height: 180,
+                                            color: Colors.grey.shade800,
+                                            child: const Center(
+                                              child: CircularProgressIndicator(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        width: double.infinity,
+                                        height: 180,
+                                        color: Colors.grey.shade800,
+                                        child: const Icon(
+                                          Icons.broken_image,
+                                          color: Colors.white54,
+                                          size: 40,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Text(
+                                    movie['title']!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Text(
+                                    movie['description']!,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 13,
+                                    ),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                );
-              },
-              child: Card(
-                color: Colors.white10,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+            ),
+          ),
+
+          // Overlay loading indicator when refreshing
+          if (_isLoading)
+            Container(
+              color: Colors.black54,
+              child: const Center(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
-                      ),
-                      child: Image.network(
-                        movie['imageUrl']!,
-                        width: double.infinity,
-                        height: 180,
-                        fit: BoxFit.cover,
-                      ),
+                    CircularProgressIndicator(
+                      color: Colors.red,
+                      strokeWidth: 3,
                     ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        movie['title']!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        movie['description']!,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 13,
-                        ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Updating movies...',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
+        ],
       ),
     );
   }

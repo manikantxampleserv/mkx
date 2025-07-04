@@ -21,7 +21,7 @@ class SilverDelegate extends SliverGridDelegateWithFixedCrossAxisCount {
   /// The [childAspectRatio] defaults to 0.7.
   SilverDelegate({
     required super.crossAxisCount,
-    super.mainAxisSpacing = 16,
+    super.mainAxisSpacing = 8,
     super.childAspectRatio = 0.7,
   }) : super(crossAxisSpacing: mainAxisSpacing);
 }

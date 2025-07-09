@@ -1,10 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:mkx/shared/bottom_bar.dart';
 import 'package:mkx/screens/movie_list_screen.dart';
 import 'package:mkx/screens/splash_screen.dart';
+import 'package:mkx/shared/bottom_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+// Global variable that will be accessible throughout the app
+bool isDarkMode = false;
+
+// Function to load the theme preference
+Future<void> loadThemePreference() async {
+  final prefs = await SharedPreferences.getInstance();
+  isDarkMode = prefs.getBool('isDarkMode') ?? false;
+}
+
+// Function to save the theme preference
+Future<void> saveThemePreference(bool value) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setBool('isDarkMode', value);
+}
+
+// A global key that allows updating the theme from anywhere
+final appKey = GlobalKey<_MyAppState>();
+
+// Function to update app theme
+void updateAppTheme() {
+  appKey.currentState?.updateTheme();
+}
+
+void main() async {
+  // Ensure Flutter is initialized before using plugins
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load theme preference at app startup
+  await loadThemePreference();
+
+  runApp(MyApp(key: appKey));
 }
 
 class MyApp extends StatefulWidget {
@@ -17,34 +47,30 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   ThemeData get _darkTheme => ThemeData(
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.teal,
+      seedColor: Colors.green,
       brightness: Brightness.dark,
     ),
-    scaffoldBackgroundColor: const Color(0xFF181818),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF181818),
-      elevation: 0,
-      iconTheme: IconThemeData(color: Colors.white),
-      titleTextStyle: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontSize: 26,
-        letterSpacing: 1.2,
-      ),
-    ),
-    textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.white)),
-    drawerTheme: const DrawerThemeData(backgroundColor: Color(0xFF181818)),
-    cardColor: Colors.white10,
   );
+  ThemeData get _lightTheme => ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.green,
+      brightness: Brightness.light,
+    ),
+  );
+
+  // Update theme and trigger a rebuild
+  void updateTheme() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Movieflix',
       debugShowCheckedModeBanner: false,
-      theme: _darkTheme,
+      theme: _lightTheme,
       darkTheme: _darkTheme,
-      themeMode: ThemeMode.dark,
+      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: SplashScreen(nextScreen: MainScreen()),
     );
   }
@@ -64,15 +90,48 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _getScreenForIndex(_selectedIndex),
-      bottomNavigationBar: BottomNavigation(
-        currentPageIndex: _selectedIndex,
-        handleChangeNav: (index) {
+      bottomNavigationBar: CustomNavigationBar(
+        selectedIndex: _selectedIndex,
+        handleChange: (index) {
           setState(() {
             _selectedIndex = index;
           });
         },
+        navItems: [
+          NavigationItem(
+            icon: Icons.home_outlined,
+            selectedIcon: Icons.home,
+            label: 'Home',
+          ),
+          NavigationItem(
+            icon: Icons.search_outlined,
+            selectedIcon: Icons.search,
+            label: 'Search',
+          ),
+          NavigationItem(
+            icon: Icons.video_library_outlined,
+            selectedIcon: Icons.video_library,
+            label: 'Upcoming',
+            badgeCount: 4,
+          ),
+          NavigationItem(
+            icon: Icons.download_outlined,
+            selectedIcon: Icons.download,
+            label: 'Downloads',
+          ),
+          NavigationItem(
+            icon: Icons.account_circle_outlined,
+            selectedIcon: Icons.account_circle,
+            label: 'Profile',
+          ),
+        ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   Widget _getScreenForIndex(int index) {
@@ -80,21 +139,13 @@ class _MainScreenState extends State<MainScreen> {
       case 0:
         return MovieListScreen();
       case 1:
-        return Center(
-          child: Text('Search', style: TextStyle(color: Colors.white)),
-        );
+        return Center(child: Text('Search'));
       case 2:
-        return Center(
-          child: Text('Upcoming', style: TextStyle(color: Colors.white)),
-        );
+        return Center(child: Text('Upcoming'));
       case 3:
-        return Center(
-          child: Text('Downloads', style: TextStyle(color: Colors.white)),
-        );
+        return Center(child: Text('Downloads'));
       case 4:
-        return Center(
-          child: Text('Settings', style: TextStyle(color: Colors.white)),
-        );
+        return Center(child: Text('Profile'));
       default:
         return MovieListScreen();
     }

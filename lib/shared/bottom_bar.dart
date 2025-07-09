@@ -1,95 +1,122 @@
 import 'package:flutter/material.dart';
 
-class BottomNavigation extends StatefulWidget {
-  final int currentPageIndex;
-  final Function(int) handleChangeNav;
+/// Model representing a navigation item for [CustomNavigationBar].
+///
+/// Each [NavigationItem] defines the icon, selected icon, label, and an optional badge count
+/// to be displayed in the navigation bar.
+///
+/// Example:
+/// ```dart
+/// NavigationItem(
+///   icon: Icons.home_outlined,
+///   selectedIcon: Icons.home,
+///   label: 'Home',
+///   badgeCount: 3,
+/// )
+/// ```
+///
+/// - [icon]: Icon to display when the item is not selected.
+/// - [selectedIcon]: Icon to display when the item is selected.
+/// - [label]: Label for the navigation item.
+/// - [badgeCount]: Optional badge count to display on the item (e.g., for notifications).
+class NavigationItem {
+  /// The icon to display when the item is not selected.
+  final IconData icon;
 
-  const BottomNavigation({
+  /// The icon to display when the item is selected.
+  final IconData selectedIcon;
+
+  /// The label for the navigation item.
+  final String label;
+
+  /// Optional badge count to display on the item (e.g., for notifications).
+  final int? badgeCount;
+
+  /// Creates a [NavigationItem].
+  ///
+  /// [icon], [selectedIcon], and [label] are required.
+  /// [badgeCount] is optional and can be used to show a badge on the item.
+  const NavigationItem({
+    required this.icon,
+    required this.selectedIcon,
+    required this.label,
+    this.badgeCount,
+  });
+}
+
+/// A reusable bottom navigation bar supporting icons, labels, and optional badges.
+///
+/// Displays a list of [NavigationItem]s as navigation destinations.
+/// The currently selected item is highlighted, and items can display a badge count if provided.
+///
+/// Example:
+/// ```dart
+/// CustomNavigationBar(
+///   selectedIndex: 0,
+///   handleChange: (index) => print('Selected: $index'),
+///   navItems: [
+///     NavigationItem(
+///       icon: Icons.home_outlined,
+///       selectedIcon: Icons.home,
+///       label: 'Home',
+///     ),
+///     NavigationItem(
+///       icon: Icons.search_outlined,
+///       selectedIcon: Icons.search,
+///       label: 'Search',
+///     ),
+///     NavigationItem(
+///       icon: Icons.notifications_outlined,
+///       selectedIcon: Icons.notifications,
+///       label: 'Alerts',
+///       badgeCount: 3,
+///     ),
+///   ],
+/// )
+/// ```
+///
+/// - [selectedIndex]: Index of the currently selected navigation item.
+/// - [handleChange]: Callback when a navigation item is selected.
+/// - [navItems]: List of [NavigationItem]s to display.
+class CustomNavigationBar extends StatefulWidget {
+  final int selectedIndex;
+  final void Function(int) handleChange;
+  final List<NavigationItem> navItems;
+
+  const CustomNavigationBar({
     super.key,
-    required this.handleChangeNav,
-    required this.currentPageIndex,
+    required this.handleChange,
+    required this.selectedIndex,
+    required this.navItems,
   });
 
   @override
-  State<BottomNavigation> createState() => _BottomNavigationState();
+  State<CustomNavigationBar> createState() => _CustomNavigationBarState();
 }
 
-class _BottomNavigationState extends State<BottomNavigation> {
+class _CustomNavigationBarState extends State<CustomNavigationBar> {
   @override
   Widget build(BuildContext context) {
-    return NavigationBarTheme(
-      data: NavigationBarThemeData(
-        backgroundColor: Colors.black,
-        indicatorColor: Colors.grey[900],
-        overlayColor: WidgetStatePropertyAll(Colors.grey[900]),
-        labelTextStyle: WidgetStatePropertyAll(
-          TextStyle(color: Colors.white, fontSize: 12),
-        ),
-      ),
-      child: NavigationBar(
-        surfaceTintColor: Colors.transparent,
-        onDestinationSelected: (int index) {
-          widget.handleChangeNav(index);
-        },
-        selectedIndex: widget.currentPageIndex,
-        destinations:
-            [
-              {
-                'icon': Icons.home_outlined,
-                'selectedIcon': Icons.home,
-                'label': 'Home',
-              },
-              {
-                'icon': Icons.search_outlined,
-                'selectedIcon': Icons.search,
-                'label': 'Search',
-              },
-              {
-                'icon': Icons.video_library_outlined,
-                'selectedIcon': Icons.video_library,
-                'label': 'Upcoming',
-                'badgeCount': 4,
-              },
-              {
-                'icon': Icons.download_outlined,
-                'selectedIcon': Icons.download,
-                'label': 'Downloads',
-              },
-              {
-                'icon': Icons.account_circle_outlined,
-                'selectedIcon': Icons.account_circle,
-                'label': 'Profile',
-              },
-            ].map((destination) {
-              return NavigationDestination(
-                selectedIcon: destination.containsKey('badgeCount')
-                    ? Badge.count(
-                        count: destination['badgeCount'] as int,
-                        child: Icon(
-                          destination['selectedIcon'] as IconData?,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Icon(
-                        destination['selectedIcon'] as IconData?,
-                        color: Colors.white,
-                      ),
-                icon: destination.containsKey('badgeCount')
-                    ? Badge.count(
-                        count: destination['badgeCount'] as int,
-                        child: Icon(
-                          destination['icon'] as IconData?,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Icon(
-                        destination['icon'] as IconData?,
-                        color: Colors.white,
-                      ),
-                label: destination['label'] as String,
-              );
-            }).toList(),
-      ),
+    return NavigationBar(
+      onDestinationSelected: widget.handleChange,
+      selectedIndex: widget.selectedIndex,
+      destinations: widget.navItems.map((destination) {
+        Widget buildIcon(IconData icon) {
+          if (destination.badgeCount != null) {
+            return Badge.count(
+              count: destination.badgeCount!,
+              child: Icon(icon),
+            );
+          }
+          return Icon(icon);
+        }
+
+        return NavigationDestination(
+          selectedIcon: buildIcon(destination.selectedIcon),
+          icon: buildIcon(destination.icon),
+          label: destination.label,
+        );
+      }).toList(),
     );
   }
 }

@@ -20,7 +20,7 @@ class MovieDetailScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white70),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -63,7 +63,7 @@ class MovieDetailScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.white70,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -76,7 +76,7 @@ class MovieDetailScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Colors.white70,
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -86,14 +86,14 @@ class MovieDetailScreen extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.white),
+                              border: Border.all(color: Colors.grey.shade800),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: const Text(
                               'PG-13',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.white,
+                                color: Colors.white70,
                               ),
                             ),
                           ),
@@ -145,20 +145,12 @@ class MovieDetailScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'Overview',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     description,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      height: 1.5,
-                      color: Colors.white70,
-                    ),
+                    style: const TextStyle(fontSize: 16, height: 1.5),
                   ),
 
                   const SizedBox(height: 24),
@@ -177,11 +169,7 @@ class MovieDetailScreen extends StatelessWidget {
 
                   const Text(
                     'Similar Movies',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
@@ -235,15 +223,10 @@ class MovieDetailScreen extends StatelessWidget {
             width: 100,
             child: Text(
               label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white70,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          Expanded(
-            child: Text(value, style: const TextStyle(color: Colors.white)),
-          ),
+          Expanded(child: Text(value)),
         ],
       ),
     );
@@ -262,10 +245,7 @@ class MovieDetailScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 6),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.white70),
-        ),
+        Text(label, style: const TextStyle(fontSize: 12)),
       ],
     );
   }
@@ -307,11 +287,7 @@ class MovieDetailScreen extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: Colors.white70,
-              ),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
   final Widget nextScreen;
-
   const SplashScreen({super.key, required this.nextScreen});
 
   @override
@@ -26,7 +25,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF181818),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -49,21 +47,16 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-
             const SizedBox(height: 24),
-
             const Text(
               'MOVIEFLIX',
               style: TextStyle(
-                color: Colors.white,
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,
               ),
             ),
-
             const SizedBox(height: 50),
-
             const SizedBox(
               width: 200,
               child: LinearProgressIndicator(
@@ -71,13 +64,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
               ),
             ),
-
             const SizedBox(height: 20),
-
-            const Text(
-              'Loading...',
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-            ),
+            const Text('Loading...', style: TextStyle(fontSize: 16)),
           ],
         ),
       ),

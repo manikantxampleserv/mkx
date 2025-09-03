@@ -4,12 +4,24 @@ class MovieDetailScreen extends StatelessWidget {
   final String title;
   final String imageUrl;
   final String description;
+  final double rating;
+  final String genre;
+  final int year;
+  final String director;
+  final List<String> cast;
+  final int duration;
 
   const MovieDetailScreen({
     super.key,
     required this.title,
     required this.imageUrl,
     required this.description,
+    required this.rating,
+    required this.genre,
+    required this.year,
+    required this.director,
+    required this.cast,
+    required this.duration,
   });
 
   @override
@@ -71,9 +83,9 @@ class MovieDetailScreen extends StatelessWidget {
                         children: [
                           const Icon(Icons.star, color: Colors.amber, size: 20),
                           const SizedBox(width: 4),
-                          const Text(
-                            '8.5/10',
-                            style: TextStyle(
+                          Text(
+                            '$rating/10',
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.white70,
@@ -89,18 +101,18 @@ class MovieDetailScreen extends StatelessWidget {
                               border: Border.all(color: Colors.grey.shade800),
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: const Text(
-                              'PG-13',
-                              style: TextStyle(
+                            child: Text(
+                              genre,
+                              style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.white70,
                               ),
                             ),
                           ),
                           const SizedBox(width: 16),
-                          const Text(
-                            '2h 35m',
-                            style: TextStyle(
+                          Text(
+                            '${duration ~/ 60}h ${duration % 60}m',
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Colors.white70,
                             ),
@@ -154,17 +166,14 @@ class MovieDetailScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 24),
-                  _buildDetailRow('Director', 'Christopher Nolan'),
+                  _buildDetailRow('Director', director),
+                  _buildDetailRow('Year', year.toString()),
                   _buildDetailRow(
-                    'Writers',
-                    'Jonathan Nolan, Christopher Nolan',
+                    'Cast',
+                    cast.join(', '),
                   ),
-                  _buildDetailRow(
-                    'Stars',
-                    'Matthew McConaughey, Anne Hathaway, Jessica Chastain',
-                  ),
-                  _buildDetailRow('Genre', 'Sci-Fi, Adventure, Drama'),
-                  _buildDetailRow('Release Date', 'November 7, 2014'),
+                  _buildDetailRow('Genre', genre),
+                  _buildDetailRow('Duration', '${duration ~/ 60}h ${duration % 60}m'),
                   const SizedBox(height: 32),
 
                   const Text(
@@ -182,24 +191,48 @@ class MovieDetailScreen extends StatelessWidget {
                           'Inception',
                           'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
                           'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.',
+                          8.8,
+                          'Sci-Fi',
+                          2010,
+                          'Christopher Nolan',
+                          ['Leonardo DiCaprio', 'Marion Cotillard'],
+                          148,
                         ),
                         _buildSimilarMovieItem(
                           context,
                           'Tenet',
                           'https://image.tmdb.org/t/p/w500/k68nPLbIST6NP96JmTxmZijEvCA.jpg',
-                          'Armed with only one word, Tenet, and fighting for the survival of the entire world, a Protagonist journeys through a twilight world of international espionage on a mission that will unfold in something beyond real time.',
-                        ),
-                        _buildSimilarMovieItem(
-                          context,
-                          'The Martian',
-                          'https://image.tmdb.org/t/p/w500/5BHuvQ6p9kfc091Z8RiFNhCwL4b.jpg',
-                          'An astronaut becomes stranded on Mars after his team assume him dead, and must rely on his ingenuity to find a way to signal to Earth that he is alive.',
+                          'Armed with only one word, Tenet, and fighting for the survival of the entire world, a Protagonist journeys through a twilight world of international espionage.',
+                          7.3,
+                          'Sci-Fi',
+                          2020,
+                          'Christopher Nolan',
+                          ['John David Washington', 'Robert Pattinson'],
+                          150,
                         ),
                         _buildSimilarMovieItem(
                           context,
                           'The Matrix',
                           'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg',
-                          'Two astronauts work together to survive after an accident leaves them stranded in space.',
+                          'A computer hacker learns from mysterious rebels about the true nature of his reality.',
+                          8.7,
+                          'Sci-Fi',
+                          1999,
+                          'The Wachowskis',
+                          ['Keanu Reeves', 'Laurence Fishburne'],
+                          136,
+                        ),
+                        _buildSimilarMovieItem(
+                          context,
+                          'Avatar',
+                          'https://image.tmdb.org/t/p/w500/jRXYjXNq0Cs2TcJjLkki24MLp7u.jpg',
+                          'A paraplegic Marine dispatched to the moon Pandora becomes torn between following orders and protecting an alien civilization.',
+                          7.8,
+                          'Sci-Fi',
+                          2009,
+                          'James Cameron',
+                          ['Sam Worthington', 'Zoe Saldana'],
+                          162,
                         ),
                       ],
                     ),
@@ -255,6 +288,12 @@ class MovieDetailScreen extends StatelessWidget {
     String title,
     String imageUrl,
     String description,
+    double rating,
+    String genre,
+    int year,
+    String director,
+    List<String> cast,
+    int duration,
   ) {
     return GestureDetector(
       onTap: () {
@@ -265,6 +304,12 @@ class MovieDetailScreen extends StatelessWidget {
               title: title,
               imageUrl: imageUrl,
               description: description,
+              rating: rating,
+              genre: genre,
+              year: year,
+              director: director,
+              cast: cast,
+              duration: duration,
             ),
           ),
         );

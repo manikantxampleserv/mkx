@@ -38,6 +38,7 @@ dependencies:
   mkx_experiment: ^0.0.1
   mkx_ui_kit: ^0.0.1
   shared_preferences: ^2.5.3
+  video_player: ^2.9.2
 
 dev_dependencies:
   flutter_test:

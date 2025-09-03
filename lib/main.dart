@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mkx/screens/movie_list_screen.dart';
+import 'package:mkx/screens/search_screen.dart';
+import 'package:mkx/screens/upcoming_screen.dart';
+import 'package:mkx/screens/downloads_screen.dart';
+import 'package:mkx/screens/profile_screen.dart';
 import 'package:mkx/screens/splash_screen.dart';
 import 'package:mkx/shared/bottom_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -139,13 +143,13 @@ class _MainScreenState extends State<MainScreen> {
       case 0:
         return MovieListScreen();
       case 1:
-        return Center(child: Text('Search'));
+        return SearchScreen();
       case 2:
-        return Center(child: Text('Upcoming'));
+        return UpcomingScreen();
       case 3:
-        return Center(child: Text('Downloads'));
+        return DownloadsScreen();
       case 4:
-        return Center(child: Text('Profile'));
+        return ProfileScreen();
       default:
         return MovieListScreen();
     }
